@@ -15,7 +15,8 @@ function App() {
       {menuVisible ? (
         <div className="menu">
           <h1>Game Menu</h1>
-          <button onClick={handleStartButtonClick}>Start</button>
+          <button onClick={handleStartButtonClick}>Create new game</button>
+          <button onClick={handleStartButtonClick}>Join a game</button>
         </div>
       ) : (
         // Render your game components here when the menu is not visible
