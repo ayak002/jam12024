@@ -1,15 +1,50 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const randomList = require('./random');
+const countryJSON = require('./country.json');
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const PORT = 3000;
+var room = [[]];
+
+const PORT = 8080;
+
+function createRoomId() {
+  if (!room.length) {
+    room.push(0);
+  } else {
+    room.push(room[room.length - 1] + 1);
+  }
+  return room[room.length - 1];
+};
+
+function joinRoomId() {
+  if (!room.length) {
+    room.push(0);
+  } else {
+    room.push(room[room.length - 1] + 1);
+  }
+  return room[room.length - 1];
+};
+
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/socket.html');
+});
+
+app.get('/randomlist', (req, res) => {
+   return res.send(randomList(countryJSON));
+});
+
+app.get('/createroomid', (req, res) => {
+  return res.json(createRoomId());
+});
+
+app.get('/joinroomid', (req, res) => {
+  return res.json(joinRoomId());
 });
 
 const rooms = new Map();
