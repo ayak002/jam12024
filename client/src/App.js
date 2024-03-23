@@ -113,7 +113,7 @@ const FlagComponents = Object.keys(flagImages).map((imageName, index) => {
                   value={username}
                   onChange={handleUsernameChange}
                   onKeyDown={handleKeyDown} // Listen for ENTER key
-                  placeholder="Enter your username"
+                  placeholder="Écrit ton pseudo !"
                 />
                 <Link to="/create-game" className="menu-link">
                   <button>Créer une nouvelle partie</button>
