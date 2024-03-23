@@ -8,7 +8,16 @@
 }
 
 .menu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
+  color: black;
+  background-color: rgb(142, 142, 248);
+  /* background-size: 500px 400px; Set a specific size in pixels */
+  /* width: 120%; Increase the width to make the background color larger */
+  /* height: 120%; Increase the height to make the background color larger */
 }
 
 .menu h1 {
@@ -31,18 +40,20 @@
 
 /* App.css */
 
-/* Styles for the flags container */
 .flag-container {
-  justify-content: center; /* Center the flags horizontally */
-  align-items: center; /* Center the flags vertically */
-  height: 100vh; /* Set the height of the flags container to the full viewport height */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 900px; /* Adjust height as needed */
+  background-size: cover;
+  background-position: center;
 }
 
-/* Styles for individual flags */
 .flag {
-  width: 100px; /* Set the width of the flags */
-  height: auto; /* Maintain aspect ratio */
+  max-width: 100px; /* Set the maximum width of the flags */
+  max-height: 100px; /* Set the maximum height of the flags */
   margin: 10px; /* Add some space between flags */
 }
-
 /* Add more specific styles as needed */

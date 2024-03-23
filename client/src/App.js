@@ -55,7 +55,7 @@ const flagImages = importAll(require.context('./flags/', false, /\.(png)$/));
 // Generate React components for each flag image
 const FlagComponents = Object.keys(flagImages).map((imageName, index) => {
   return (
-    <img key={index} src={flagImages[imageName]} alt={imageName} />
+    <img className='flag' key={index} src={flagImages[imageName]} alt={imageName} />
   );
 });
 
