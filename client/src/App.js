@@ -4,7 +4,6 @@ import './App.css'; // Import CSS file if needed
 //import oiseauFlag from './albanie.png';
 //import australieFlag from './australie.png';
 
-
 function GetList() {
   const [dataArray, setDataArray] = useState([]);
 
@@ -21,7 +20,7 @@ function GetList() {
         // Convert JSON data to array
         const array = Array.isArray(data) ? data : []; // Check if data is an array
         setDataArray(array);
-        console.log(array)
+        console.log("json=",array)
       })
       .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
@@ -44,8 +43,7 @@ function CreateGamePage() {
     <div className="white-page">
       {/* Content for the Create New Game page */}
       <h1>Créer une nouvelle partie</h1>
-      
-      {GetList}
+      {GetList()}
     </div>
   );
 }
@@ -81,38 +79,44 @@ function App() {
   };
 
   // Function to import all flag images from a directory
-function importAll(r) {
-  let images = {};
-  r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
-  return images;
-}
+  function importAll(r) {
+    let images = {};
+    r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
+    return images;
+  }
 
-// Import all flag images dynamically
-const flagImages = importAll(require.context('./flags/', false, /\.(png)$/));
+  // Import all flag images dynamically
+  const flagImages = importAll(require.context('./flags/', false, /\.(png)$/));
 
-// Generate React components for each flag image
-const FlagComponents = Object.keys(flagImages).map((imageName, index) => {
-  // Ensure that the callback function returns a value
+  console.log("Flag images:", flagImages);
+
+  // Generate React components for each flag image
+  const FlagComponents = Object.keys(flagImages).map((imageName, index) => {
+    // Ensure that the callback function returns a value
+    console.log("Image name:", imageName);
+    console.log("Image source:", flagImages[imageName]);
+
+    return (
+      <img className='flag' key={index} src={flagImages[imageName]} alt={imageName} />
+    );
+  });
+
+  console.log("Flag components:", FlagComponents);
+
+  function displayFlags() {
+    return (
+      <div className="flag-container">
+        {FlagComponents}
+      </div>
+    );
+  }
+
   return (
-    <img className='flag' key={index} src={flagImages[imageName]} alt={imageName} />
-  );
-});
-
-function displayFlags() {
-  return (
-    <div className="flag-container">
-          {FlagComponents}
-    </div>
-  );
-}
-
-return (
-  <Router>
+    <Router>
       <Switch>
         <Route exact path="/">
           {menuVisible ? (
             <div className="menu">
-              <Route path="/join-game" component={displayFlags} />
               <h1>Devine où !</h1>
               <input
                 type="text"
@@ -122,12 +126,13 @@ return (
                 placeholder="Écrit ton pseudo !"
               />
               <Link to="/create-game" className="menu-link">
-                <button>Créer une nouvelle partie</button>                
+                <button>Créer une nouvelle partie</button>
               </Link>
               <Link to="/join-game" className="menu-link">
                 <button>Joindre une partie</button>
               </Link>
               {username && <p className="username">{username}</p>}
+              {displayFlags()}
             </div>
           ) : (
             // Render your game components here when the menu is not visible
@@ -140,8 +145,8 @@ return (
         <Route path="/create-game" component={CreateGamePage} />
         <Route path="/join-game" component={JoinGamePage} />
       </Switch>
-  </Router>
-);
+    </Router>
+  );
 }
 
 export default App;
