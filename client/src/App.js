@@ -43,7 +43,8 @@ function CreateGamePage() {
   return (
     <div className="white-page">
       {/* Content for the Create New Game page */}
-      <h1>Create une nouvelle partie</h1>
+      <h1>Créer une nouvelle partie</h1>
+      
       {GetList}
     </div>
   );
@@ -61,6 +62,7 @@ function JoinGamePage() {
 function App() {
   const [menuVisible, setMenuVisible] = useState(true);
   const [username, setUsername] = useState('');
+  const [flagContainerVisible, setFlagContainerVisible] = useState(true);
 
 
   const handleUsernameChange = (event) => {
@@ -94,49 +96,55 @@ const FlagComponents = Object.keys(flagImages).map((imageName, index) => {
   );
 });
 
-  return (
-    <Router>
-      <div className="App">
-        {/* Flags container */}
+const hideFlagContainer = () => {
+  setFlagContainerVisible(false);
+};
+
+return (
+  <Router>
+    <div className="App">
+      {/* Flags container */}
+      {flagContainerVisible && (
         <div className="flag-container">
           {/* Flags */}
-            {FlagComponents}
+          {FlagComponents}
         </div>
+      )}
 
-        <Switch>
-          <Route exact path="/">
-            {menuVisible ? (
-              <div className="menu">
-                <h1>Devine où !</h1>
-                <input
-                  type="text"
-                  value={username}
-                  onChange={handleUsernameChange}
-                  onKeyDown={handleKeyDown} // Listen for ENTER key
-                  placeholder="Écrit ton pseudo !"
-                />
-                <Link to="/create-game" className="menu-link">
-                  <button>Créer une nouvelle partie</button>
-                </Link>
-                <Link to="/join-game" className="menu-link">
-                  <button>Joindre une partie</button>
-                </Link>
-                {username && <p className="username">{username}</p>}
-              </div>
-            ) : (
-              // Render your game components here when the menu is not visible
-              <div>
-                <h1>Game Started!</h1>
-                {/* Add your game components here */}
-              </div>
-            )}
-          </Route>
-          <Route path="/create-game" component={CreateGamePage} />
-          <Route path="/join-game" component={JoinGamePage} />
-        </Switch>
-      </div>
-    </Router>
-  );
+      <Switch>
+        <Route exact path="/">
+          {menuVisible ? (
+            <div className="menu">
+              <h1>Devine où !</h1>
+              <input
+                type="text"
+                value={username}
+                onChange={handleUsernameChange}
+                onKeyDown={handleKeyDown}
+                placeholder="Écrit ton pseudo !"
+              />
+              <Link to="/create-game" className="menu-link">
+                <button onClick={hideFlagContainer}>Créer une nouvelle partie</button>                
+              </Link>
+              <Link to="/join-game" className="menu-link">
+                <button>Joindre une partie</button>
+              </Link>
+              {username && <p className="username">{username}</p>}
+            </div>
+          ) : (
+            // Render your game components here when the menu is not visible
+            <div>
+              <h1>Game Started!</h1>
+              {/* Add your game components here */}
+            </div>
+          )}
+        </Route>
+        <Route path="/create-game" component={CreateGamePage} />
+        <Route path="/join-game" component={JoinGamePage} />
+      </Switch>
+    </div>
+  </Router>
+);
 }
 
 export default App;
