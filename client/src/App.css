@@ -28,3 +28,21 @@
 .menu button:hover {
   background-color: #0056b3;
 }
+
+/* App.css */
+
+/* Styles for the flags container */
+.flag-container {
+  justify-content: center; /* Center the flags horizontally */
+  align-items: center; /* Center the flags vertically */
+  height: 100vh; /* Set the height of the flags container to the full viewport height */
+}
+
+/* Styles for individual flags */
+.flag {
+  width: 100px; /* Set the width of the flags */
+  height: auto; /* Maintain aspect ratio */
+  margin: 10px; /* Add some space between flags */
+}
+
+/* Add more specific styles as needed */
