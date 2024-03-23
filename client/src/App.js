@@ -27,11 +27,6 @@ function App() {
   const [menuVisible, setMenuVisible] = useState(true);
   const [username, setUsername] = useState('');
 
-  const handleStartButtonClick = () => {
-    // Handle start button click event here
-    console.log("Game started!");
-    // You can add additional logic here to start the game
-  };
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -60,7 +55,7 @@ const flagImages = importAll(require.context('./flags/', false, /\.(png)$/));
 // Generate React components for each flag image
 const FlagComponents = Object.keys(flagImages).map((imageName, index) => {
   return (
-    <img key={index} src={flagImages[imageName].default} alt={imageName} />
+    <img key={index} src={flagImages[imageName]} alt={imageName} />
   );
 });
 
