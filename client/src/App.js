@@ -59,10 +59,11 @@ function JoinGamePage() {
   );
 }
 
+
+
 function App() {
   const [menuVisible, setMenuVisible] = useState(true);
   const [username, setUsername] = useState('');
-  const [flagContainerVisible, setFlagContainerVisible] = useState(true);
 
 
   const handleUsernameChange = (event) => {
@@ -91,30 +92,27 @@ const flagImages = importAll(require.context('./flags/', false, /\.(png)$/));
 
 // Generate React components for each flag image
 const FlagComponents = Object.keys(flagImages).map((imageName, index) => {
+  // Ensure that the callback function returns a value
   return (
     <img className='flag' key={index} src={flagImages[imageName]} alt={imageName} />
   );
 });
 
-const hideFlagContainer = () => {
-  setFlagContainerVisible(false);
-};
+function displayFlags() {
+  return (
+    <div className="flag-container">
+          {FlagComponents}
+    </div>
+  );
+}
 
 return (
   <Router>
-    <div className="App">
-      {/* Flags container */}
-      {flagContainerVisible && (
-        <div className="flag-container">
-          {/* Flags */}
-          {FlagComponents}
-        </div>
-      )}
-
       <Switch>
         <Route exact path="/">
           {menuVisible ? (
             <div className="menu">
+              <Route path="/join-game" component={displayFlags} />
               <h1>Devine où !</h1>
               <input
                 type="text"
@@ -124,7 +122,7 @@ return (
                 placeholder="Écrit ton pseudo !"
               />
               <Link to="/create-game" className="menu-link">
-                <button onClick={hideFlagContainer}>Créer une nouvelle partie</button>                
+                <button>Créer une nouvelle partie</button>                
               </Link>
               <Link to="/join-game" className="menu-link">
                 <button>Joindre une partie</button>
@@ -142,7 +140,6 @@ return (
         <Route path="/create-game" component={CreateGamePage} />
         <Route path="/join-game" component={JoinGamePage} />
       </Switch>
-    </div>
   </Router>
 );
 }
