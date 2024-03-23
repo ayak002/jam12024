@@ -1,15 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import './App.css'; // Import CSS file if needed
 //import oiseauFlag from './albanie.png';
 //import australieFlag from './australie.png';
 
 
+function GetList() {
+  const [dataArray, setDataArray] = useState([]);
+
+  useEffect(() => {
+    // Fetch JSON data from the server
+    fetch('http://localhost:8080/randomList')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Convert JSON data to array
+        const array = Array.isArray(data) ? data : []; // Check if data is an array
+        setDataArray(array);
+        console.log(array)
+      })
+      .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+      });
+  }, []); // Empty dependency array ensures the effect runs only once
+  return (
+    <div>
+      {/* Render your component using the dataArray */}
+      <ul>
+        {dataArray.map((item, index) => (
+          <li key={index}>{item}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function CreateGamePage() {
   return (
     <div className="white-page">
       {/* Content for the Create New Game page */}
       <h1>Create une nouvelle partie</h1>
+      {GetList}
     </div>
   );
 }
