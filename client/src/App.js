@@ -49,9 +49,15 @@ function GetList() {
       {/* Render your component using the dataArray */}
       {dataArray.map((item, index) => {
         if (Array.isArray(item) && item.length >= 2) {
+          const countryName = item[0]; // Extract the country name
           const imageName = item[1]; // Extract the path to the image
           const filename = getFilename(imageName); // Extract the filename
-          return <img className='flag' key={index} src={flagImages[filename]} alt={filename} />;
+          return (
+            <div key={index} className="flag-item">
+              <img className='flag' src={flagImages[filename]} alt={filename} />
+              <p className="country-name">{countryName}</p>
+            </div>
+          );
         } else {
           return null;
         }
@@ -59,6 +65,7 @@ function GetList() {
     </div>
   );
 }
+
 
 
 
