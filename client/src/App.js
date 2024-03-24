@@ -2,6 +2,46 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import './App.css'; // Import CSS file if needed
 
+function Autocomplete({ options, onSelect }) {
+  const [inputValue, setInputValue] = useState('');
+  const [filteredOptions, setFilteredOptions] = useState([]);
+
+  const handleInputChange = (event) => {
+    const value = event.target.value;
+    setInputValue(value);
+
+    // Filter options based on input value
+    const filtered = options.filter(option =>
+      option.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredOptions(filtered);
+  };
+
+  const handleSelectOption = (option) => {
+    setInputValue(option);
+    onSelect(option);
+    setFilteredOptions([]);
+  };
+
+  return (
+    <div className="autocomplete">
+      <input
+        type="text"
+        value={inputValue}
+        onChange={handleInputChange}
+        placeholder="Search..."
+      />
+      <ul>
+        {filteredOptions.map((option, index) => (
+          <li key={index} onClick={() => handleSelectOption(option)}>
+            {option}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function GetList() {
   const [dataArray, setDataArray] = useState([]);
   const [flagImages, setFlagImages] = useState({});
@@ -20,7 +60,7 @@ function GetList() {
         const array = Array.isArray(data) ? data : []; // Check if data is an array
         setDataArray(array);
         // Import all flag images dynamically
-        const importedFlagImages = importAll(require.context('./flags/', false, /\.(png)$/));
+        const importedFlagImages = importAll2(require.context('./flags/', false, /\.(png)$/));
         setFlagImages(importedFlagImages);
       })
       .catch(error => {
@@ -29,7 +69,7 @@ function GetList() {
   }, []); // Empty dependency array ensures the effect runs only once
 
   // Function to import all flag images from a directory
-  function importAll(r) {
+  function importAll2(r) {
     let images = {};
     r.keys().forEach(key => {
       images[key.replace('./', '')] = r(key);
@@ -78,6 +118,10 @@ function GetList() {
           ))}
         </tbody>
       </table>
+      <Autocomplete
+        options={dataArray.map(item => item[0])}
+     //   onSelect={onSelect}
+      />
     </div>
   );
 }
