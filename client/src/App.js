@@ -132,14 +132,14 @@ function GetList() {
                 return (
                   <td key={colIndex}>
                     <div
-                      className={`flag-item ${isClicked ? 'selected' : ''}`}
+                      className={`flag-item ${hoveredFlagIndex === index || clickedFlags.includes(index) ? 'selected' : ''}`}
                       onClick={() => handleFlagClick(index)}
                       onMouseEnter={() => handleFlagHover(index)}
                       onMouseLeave={handleFlagLeave}
                     >
                       <img className='flag' src={flagImages[filename]} alt={filename} />
                       <p className="country-name">{countryName}</p>
-                      {isClicked && <img className='cross' src={croix} alt="cross" />}
+                      {clickedFlags.includes(index) && <img className='cross' src={croix} alt="cross" />}
                     </div>
                   </td>
                 );
