@@ -40,6 +40,10 @@
 
 /* App.css */
 
+.flag-game {
+  background-color: rgb(224, 255, 255);
+}
+
 .flag-container {
   display: flex;
   flex-wrap: wrap;

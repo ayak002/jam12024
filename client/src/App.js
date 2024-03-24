@@ -51,7 +51,7 @@ function GetList() {
         if (Array.isArray(item) && item.length >= 2) {
           const imageName = item[1]; // Extract the path to the image
           const filename = getFilename(imageName); // Extract the filename
-          return <img className='flag' key={index} src={flagImages[imageName]} alt={filename} />;
+          return <img className='flag' key={index} src={flagImages[filename]} alt={filename} />;
         } else {
           return null;
         }
