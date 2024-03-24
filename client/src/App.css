@@ -86,9 +86,6 @@
 
 .flag-item:hover {
   cursor: pointer;
-}
-
-.flag-item.selected {
   filter: brightness(50%);
 }
 
