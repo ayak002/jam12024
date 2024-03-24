@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import './App.css';
 import croix from './croix.png'
+import ChatApp from './chat';
+import { io } from 'socket.io-client';
+
+const socket = io("http://localhost:8080");
 
 function Autocomplete({ options, onSelect }) {
   const [inputValue, setInputValue] = useState('');
@@ -22,6 +26,12 @@ function Autocomplete({ options, onSelect }) {
     onSelect(option);
     setFilteredOptions([]);
   };
+  const sendMessage = () => {
+  if (inputValue.trim() !== '') {
+    socket.emit('answer', inputValue);
+    setInputValue('');
+    }
+  }
 
   return (
     <div className="autocomplete" style={{ display: 'inline-block' }}>
@@ -39,11 +49,12 @@ function Autocomplete({ options, onSelect }) {
           </li>
         ))}
       </ul>
+      <button onClick={sendMessage}>Envoyer</button>
     </div>
   );
 }
 
-function GetList() {
+function GetList(roomId) {
   const [dataArray, setDataArray] = useState([]);
   const [flagImages, setFlagImages] = useState({});
   const [clickedFlags, setClickedFlags] = useState([]);
@@ -110,12 +121,15 @@ function GetList() {
   return (
     <div className="flag-container">
       <div>
+      <ChatApp socket={socket} />
+      </div>
+      <div>
         <p>Ton pays</p>
         <Autocomplete
           options={dataArray.map(item => item[0])}
           onSelect={(option) => {
             setSelectedOption(option);
-            console.log("Element sélectionné:", option);
+            // console.log("Element sélectionné:", option);
           }}
         />
       </div>
@@ -154,7 +168,7 @@ function GetList() {
           options={dataArray.map(item => item[0])}
           onSelect={(option) => {
             setSelectedOption(option);
-            console.log("Element sélectionné 2:", option);
+            // console.log("Element sélectionné 2:", option);
           }}
         />
       </div>
@@ -165,7 +179,7 @@ function GetList() {
 function CreateGamePage() {
   return (
     <div className="white-page">
-      <GetList />
+      <GetList roomId={0}/>
     </div>
   );
 }

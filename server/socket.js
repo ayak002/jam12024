@@ -1,141 +1,121 @@
 const express = require('express');
 const http = require('http');
-const core = require('cors');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const { Server } = require('socket.io');
 const randomList = require('./random');
 const countryJSON = require('./country.json');
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+    cors: {
+      origin: '*',
+    },
+  });
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(core());
-
-var room = [];
+app.use(cors());
 
 const PORT = 8080;
 
+const rooms = [];
+
 function createRoomId() {
-  if (!room.length) {
-    room.push([0, 1]);
-  } else {
-    room.push([(room[room.length - 1][0] + 1), 1]);
-  }
-  return room[room.length - 1][0];
-};
+    let roomId = generateRoomId();
+    rooms.push([roomId, 1]);
+    return roomId;
+}
 
-
-function joinRoomId(id) {
-
-    if (!room.length) {
-      room.push([0, 1]);
-    } else {
-      for (let i = 0; i < room.length ; i++) {
-        if (room[i][1] == 1) {
-          room[i][1] =  2;
-          console.log(room);
-          return room[i][0];
+function joinRoomId(roomId) {
+    if (roomId === -1) {
+        let availableRoomId = joinAnyRoom();
+        if (availableRoomId === -1) {
+            let newRoomId = createRoomId();
+            return newRoomId;
+        } else {
+            rooms[availableRoomId][1]++;
+            return availableRoomId;
         }
-      }
-      room.push([room[room.length - 1][0] + 1, 1]);
+    } else {
+        let roomIndex = rooms.findIndex(([id, count]) => id === roomId);
+        if (roomIndex === -1) {
+            return -1;
+        }
+        if (rooms[roomIndex][1] >= 2) {
+            return -2;
+        }
+        rooms[roomIndex][1]++;
+        return roomId;
     }
-    console.log(room);
-    return room[room.length - 1];
-};
+}
 
-// function joinRoomId(id) {
+function joinAnyRoom() {
+    for (let i = 0; i < rooms.length; i++) {
+        if (rooms[i][1] < 2) {
+            return i;
+        }
+    }
+    return -1;
+}
 
-//   console.log("id de join:" + id);
-//   if (id === -1 || !id) {
-//     console.log("first")
-//     if (!room.length) {
-//       room.push([0, 1]);
-//     } else {
-//       for (let i = 0; i < room.length ; i++) {
-//         if (room[i][1] == 1) {
-//           room[i][1] =  2;
-//           console.log(room);
-//           return room[i][0];
-//         }
-//       }
-//       room.push([room[room.length - 1][0] + 1, 1]);
-//     }
-//     console.log(room);
-//     return room[room.length - 1];
-//   } else {
-//     console.log("second")
-//     if (room[id]) {
-//       room[id][1] = 2;
-//       console.log(room);
-//       return room[id][0];
-//     } else
-//       return -1;
-//   }
-// };
+function generateRoomId() {
+  if (!rooms.length) {
+    return rooms.length;
+  } else {
+    return rooms.length + 1;
+  }
+}
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/socket.html');
+    res.sendFile(__dirname + '/socket.html');
 });
 
 app.get('/randomlist', (req, res) => {
-   return res.send(randomList(countryJSON));
+    return res.send(randomList(countryJSON));
 });
 
 app.get('/createroomid', (req, res) => {
-  return res.json(createRoomId());
+    let result = createRoomId();
+    console.log(rooms);
+    return res.json(result);
 });
 
 app.post('/joinroomid', (req, res) => {
-  return res.json(joinRoomId(req.body.id));
+    let result = joinRoomId(parseInt(req.body.id));
+    console.log(rooms);
+    return res.json(result);
 });
 
 io.on('connection', (socket) => {
-  let id = 0
-  console.log('a user connected');
+  console.log('Nouvelle connexion socket: ', socket.id);
 
-  socket.on('join', async ({ username, roomId }) => {
-    id = await joinRoomId(roomId)[0];
-    socket.join(id);
+  socket.on('sendmessage', (data) => {
+    console.log('Message reçu:', data);
 
-    io.to(id).emit('chat message', `${username} joined the room`);
-
-    const usersInRoom = room[id][1];
-    io.to(socket.id).emit('users in room', usersInRoom);
-
-    //if (usersInRoom.length >= 2) {
-      io.to(id).emit('ready to chat');
-    //}
+    io.emit('message', data);
   });
 
-  socket.on('chat message', (msg) => {
-    const userRoom = getRoomForUser(socket.id);
-    if (userRoom) {
-      io.to(userRoom).emit('chat message', msg);
-    }
-  });
+  socket.on('answer', (data) => {
+    console.log('Réponse reçu:', data);
 
+    socket.broadcast.emit('answer', `on a proposé ${data}`);
+  });
   socket.on('disconnect', () => {
-    console.log('user disconnected');
-    room.forEach((users, roomId) => {
-      if (users.has(socket.id)) {
-        users.delete(socket.id);
-        io.to(roomId).emit('chat message', `User left the room`);
-      }
-    });
+    console.log('Déconnexion socket: ', socket.id);
   });
 });
 
 function getRoomForUser(userId) {
-  for (let i = 0; i < room.length; i++) {
-    if (room[i].has(userId)) {
-      return i;
-    }
+  for (const [roomId, _] of rooms) {
+      if (rooms[roomId].includes(userId)) {
+          return roomId;
+      }
   }
   return null;
 }
+
 server.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
 });
