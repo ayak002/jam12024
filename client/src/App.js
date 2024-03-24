@@ -119,10 +119,13 @@ function GetList() {
   // Inside the GetList component
   return (
     <div className="flag-container">
-        <Autocomplete
-        options={dataArray.map(item => item[0])}
-        onHover={handleFlagHover}
-      />
+  <div>
+    <p>Ton pays</p>
+    <Autocomplete
+      options={dataArray.map(item => item[0])}
+      onHover={handleFlagHover}
+    />
+  </div>
       <table>
         <tbody>
           {/* Render your component using the dataArray */}
@@ -153,10 +156,13 @@ function GetList() {
           ))}
         </tbody>
       </table>
-      <Autocomplete
-        options={dataArray.map(item => item[0])}
-        onHover={handleFlagHover}
-      />
+      <div>
+    <p>Réponse</p>
+    <Autocomplete
+      options={dataArray.map(item => item[0])}
+      onHover={handleFlagHover}
+    />
+  </div>
     </div>
   );
 } 
