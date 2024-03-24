@@ -86,3 +86,11 @@
   margin: 10px; /* Add some space between flags */
 }
 /* Add more specific styles as needed */
+
+.flag-item:hover {
+  cursor: pointer;
+}
+
+.flag-item.selected {
+  filter: brightness(50%);
+}

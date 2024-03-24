@@ -45,6 +45,7 @@ function Autocomplete({ options, onSelect }) {
 function GetList() {
   const [dataArray, setDataArray] = useState([]);
   const [flagImages, setFlagImages] = useState({});
+  const [selectedFlag, setSelectedFlag] = useState(null); // State to keep track of selected flag
 
   useEffect(() => {
     // Fetch JSON data from the server
@@ -82,6 +83,10 @@ function GetList() {
     return path.split('/').pop();
   }
 
+  const handleFlagClick = (index) => {
+    setSelectedFlag(index); // Set the selected flag index
+  };
+
   // Function to chunk the dataArray into arrays of size 10
   function chunkArray(arr, size) {
     const chunkedArr = [];
@@ -107,7 +112,7 @@ function GetList() {
                 const filename = getFilename(imageName); // Extract the filename
                 return (
                   <td key={index}>
-                    <div className="flag-item">
+                    <div key={index} className={`flag-item ${selectedFlag === index ? 'selected' : ''}`} onClick={() => handleFlagClick(index)}>
                       <img className='flag' src={flagImages[filename]} alt={filename} />
                       <p className="country-name">{countryName}</p>
                     </div>
