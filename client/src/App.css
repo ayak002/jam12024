@@ -91,3 +91,13 @@
 .flag-item.selected {
   filter: brightness(50%);
 }
+
+.cross {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 20px; /* Adjust the width as needed */
+  height: 20px; /* Adjust the height as needed */
+  background-size: cover;
+  cursor: pointer; /* Add cursor pointer for better UX */
+}

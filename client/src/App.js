@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import './App.css'; // Import CSS file if needed
+import croix from './croix.png'
 
 function Autocomplete({ options, onSelect, onHover }) {
   const [inputValue, setInputValue] = useState('');
@@ -50,6 +51,7 @@ function GetList() {
   const [dataArray, setDataArray] = useState([]);
   const [flagImages, setFlagImages] = useState({});
   const [hoveredFlagIndex, setHoveredFlagIndex] = useState(-1); // State to keep track of hovered flag index
+  const [clickedFlag, setClickedFlag] = useState(null);
 
   useEffect(() => {
     // Fetch JSON data from the server
@@ -87,6 +89,15 @@ function GetList() {
     return path.split('/').pop();
   }
 
+  const handleFlagClick = (index) => {
+    if (clickedFlag === index) {
+      setClickedFlag(null); // If the same flag is clicked again, deselect it
+    } else {
+      setClickedFlag(index); // Set the clicked flag index
+    }
+  };
+  
+
   const handleFlagHover = (index) => {
     setHoveredFlagIndex(index); // Set the hovered flag index
   };
@@ -122,11 +133,15 @@ function GetList() {
                   <td key={index}>
                     <div
                       className={`flag-item ${hoveredFlagIndex === rowIndex * 10 + index ? 'selected' : ''}`}
+                      onClick={() => handleFlagClick(rowIndex * 10 + index)}
                       onMouseEnter={() => handleFlagHover(rowIndex * 10 + index)}
                       onMouseLeave={handleFlagLeave}
                     >
                       <img className='flag' src={flagImages[filename]} alt={filename} />
                       <p className="country-name">{countryName}</p>
+                      {clickedFlag === rowIndex * 10 + index && (
+                        <img className='cross' src={croix} alt="cross" />
+                      )}
                     </div>
                   </td>
                 );
@@ -142,7 +157,7 @@ function GetList() {
       />
     </div>
   );
-}
+}  
 
 
 function CreateGamePage() {
