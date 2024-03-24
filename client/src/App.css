@@ -94,9 +94,10 @@
 
 .cross {
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 20px; /* Adjust the width as needed */
-  height: 20px; /* Adjust the height as needed */
+  top: -10;
+  right: -10;
+  width: 100px; /* Adjust the width as needed */
+  height: 100px; /* Adjust the height as needed */
   background-size: cover;
+  filter: brightness(100%);
 }

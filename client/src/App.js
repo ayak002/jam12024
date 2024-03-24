@@ -132,7 +132,7 @@ function GetList() {
                 return (
                   <td key={colIndex}>
                     <div
-                      className={`flag-item ${hoveredFlagIndex === index ? 'selected' : ''}`}
+                      className={`flag-item ${isClicked ? 'selected' : ''}`}
                       onClick={() => handleFlagClick(index)}
                       onMouseEnter={() => handleFlagHover(index)}
                       onMouseLeave={handleFlagLeave}
@@ -155,6 +155,8 @@ function GetList() {
     </div>
   );
 } 
+
+
 
 
 function CreateGamePage() {
