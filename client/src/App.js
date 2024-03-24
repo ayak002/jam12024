@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import './App.css'; // Import CSS file if needed
-//import oiseauFlag from './albanie.png';
-//import australieFlag from './australie.png';
 
 function GetList() {
   const [dataArray, setDataArray] = useState([]);
+  const [flagImages, setFlagImages] = useState({});
 
   useEffect(() => {
     // Fetch JSON data from the server
@@ -20,30 +19,56 @@ function GetList() {
         // Convert JSON data to array
         const array = Array.isArray(data) ? data : []; // Check if data is an array
         setDataArray(array);
-        console.log("json=",array)
+        console.log("json=", array);
+        // Import all flag images dynamically
+        const importedFlagImages = importAll(require.context('./flags/', false, /\.(png)$/));
+        setFlagImages(importedFlagImages);
+        console.log("import=",importedFlagImages)
       })
       .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
       });
   }, []); // Empty dependency array ensures the effect runs only once
+
+  // Function to import all flag images from a directory
+  function importAll(r) {
+    let images = {};
+    r.keys().forEach(key => {
+      images[key.replace('./', '')] = r(key);
+    });
+    return images;
+  }
+
+  // Function to get the filename from the path
+  function getFilename(path) {
+    return path.split('/').pop();
+  }
+
   return (
-    <div>
+    <div className="flag-game">
       {/* Render your component using the dataArray */}
-      <ul>
-        {dataArray.map((item, index) => (
-          <li key={index}>{item}</li>
-        ))}
-      </ul>
+      {dataArray.map((item, index) => {
+        if (Array.isArray(item) && item.length >= 2) {
+          const imageName = item[1]; // Extract the path to the image
+          const filename = getFilename(imageName); // Extract the filename
+          return <img className='flag' key={index} src={flagImages[imageName]} alt={filename} />;
+        } else {
+          return null;
+        }
+      })}
     </div>
   );
 }
+
+
+
 
 function CreateGamePage() {
   return (
     <div className="white-page">
       {/* Content for the Create New Game page */}
       <h1>Créer une nouvelle partie</h1>
-      {GetList()}
+      <GetList />
     </div>
   );
 }
@@ -57,12 +82,9 @@ function JoinGamePage() {
   );
 }
 
-
-
 function App() {
   const [menuVisible, setMenuVisible] = useState(true);
   const [username, setUsername] = useState('');
-
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
