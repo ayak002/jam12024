@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
-import './App.css'; // Import CSS file if needed
+import './App.css';
 import croix from './croix.png'
 
 function Autocomplete({ options, onSelect }) {
@@ -11,7 +11,6 @@ function Autocomplete({ options, onSelect }) {
     const value = event.target.value;
     setInputValue(value);
 
-    // Filter options based on input value
     const filtered = options.filter(option =>
       option.toLowerCase().includes(value.toLowerCase())
     );
@@ -47,11 +46,11 @@ function Autocomplete({ options, onSelect }) {
 function GetList() {
   const [dataArray, setDataArray] = useState([]);
   const [flagImages, setFlagImages] = useState({});
-  const [clickedFlags, setClickedFlags] = useState([]); // State to keep track of clicked flag indexes
-  const [hoveredFlagIndex, setHoveredFlagIndex] = useState(-1); // State to keep track of hovered flag index
+  const [clickedFlags, setClickedFlags] = useState([]);
+  const [hoveredFlagIndex, setHoveredFlagIndex] = useState(-1);
+  const [selectedOption, setSelectedOption] = useState(null);
 
   useEffect(() => {
-    // Fetch JSON data from the server
     fetch('http://localhost:8080/randomList')
       .then(response => {
         if (!response.ok) {
@@ -60,19 +59,16 @@ function GetList() {
         return response.json();
       })
       .then(data => {
-        // Convert JSON data to array
-        const array = Array.isArray(data) ? data : []; // Check if data is an array
+        const array = Array.isArray(data) ? data : [];
         setDataArray(array);
-        // Import all flag images dynamically
         const importedFlagImages = importAll2(require.context('./flags/', false, /\.(png)$/));
         setFlagImages(importedFlagImages);
       })
       .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
       });
-  }, []); // Empty dependency array ensures the effect runs only once
+  }, []);
 
-  // Function to import all flag images from a directory
   function importAll2(r) {
     let images = {};
     r.keys().forEach(key => {
@@ -81,30 +77,26 @@ function GetList() {
     return images;
   }
 
-  // Function to get the filename from the path
   function getFilename(path) {
     return path.split('/').pop();
   }
 
   const handleFlagClick = (index) => {
     if (clickedFlags.includes(index)) {
-      // If the flag is already clicked, remove it from the array
       setClickedFlags(clickedFlags.filter(flagIndex => flagIndex !== index));
     } else {
-      // If the flag is not clicked, add it to the array
       setClickedFlags([...clickedFlags, index]);
     }
   };
 
   const handleFlagHover = (index) => {
-    setHoveredFlagIndex(index); // Set the hovered flag index
+    setHoveredFlagIndex(index);
   };
 
   const handleFlagLeave = () => {
-    setHoveredFlagIndex(-1); // Reset hovered flag index
+    setHoveredFlagIndex(-1);
   };
 
-  // Function to chunk the dataArray into arrays of size 10
   function chunkArray(arr, size) {
     const chunkedArr = [];
     for (let i = 0; i < arr.length; i += size) {
@@ -113,29 +105,29 @@ function GetList() {
     return chunkedArr;
   }
 
-  // Chunk the dataArray into arrays of size 10
   const chunkedFlags = chunkArray(dataArray, 10);
 
-  // Inside the GetList component
   return (
     <div className="flag-container">
-  <div>
-    <p>Ton pays</p>
-    <Autocomplete
-      options={dataArray.map(item => item[0])}
-      onHover={handleFlagHover}
-    />
-  </div>
+      <div>
+        <p>Ton pays</p>
+        <Autocomplete
+          options={dataArray.map(item => item[0])}
+          onSelect={(option) => {
+            setSelectedOption(option);
+            console.log("Element sélectionné:", option);
+          }}
+        />
+      </div>
       <table>
         <tbody>
-          {/* Render your component using the dataArray */}
           {chunkedFlags.slice(0, 3).map((row, rowIndex) => (
             <tr key={rowIndex}>
               {row.map((item, colIndex) => {
                 const index = rowIndex * 10 + colIndex;
-                const countryName = item[0]; // Extract the country name
-                const imageName = item[1]; // Extract the path to the image
-                const filename = getFilename(imageName); // Extract the filename
+                const countryName = item[0];
+                const imageName = item[1];
+                const filename = getFilename(imageName);
                 const isClicked = clickedFlags.includes(index);
                 return (
                   <td key={colIndex}>
@@ -157,23 +149,22 @@ function GetList() {
         </tbody>
       </table>
       <div>
-    <p>Réponse</p>
-    <Autocomplete
-      options={dataArray.map(item => item[0])}
-      onHover={handleFlagHover}
-    />
-  </div>
+        <p>Réponse</p>
+        <Autocomplete
+          options={dataArray.map(item => item[0])}
+          onSelect={(option) => {
+            setSelectedOption(option);
+            console.log("Element sélectionné 2:", option);
+          }}
+        />
+      </div>
     </div>
   );
-} 
-
-
-
+}
 
 function CreateGamePage() {
   return (
     <div className="white-page">
-      {/* Content for the Create New Game page */}
       <GetList />
     </div>
   );
@@ -182,7 +173,6 @@ function CreateGamePage() {
 function JoinGamePage() {
   return (
     <div className="white-page">
-      {/* Content for the Join a Game page */}
       <GetList />
     </div>
   );
@@ -198,29 +188,21 @@ function App() {
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
-      // Save the username when ENTER key is pressed
       const enteredUsername = event.target.value.trim();
-      setUsername(enteredUsername); // Save the username
-      setMenuVisible(true); // Hide the menu
-      event.target.value = ''; // Clear the input field
+      setUsername(enteredUsername);
+      setMenuVisible(true);
+      event.target.value = '';
     }
   };
-
-  // Function to import all flag images from a directory
   function importAll(r) {
     let images = {};
     r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
     return images;
   }
-
-  // Import all flag images dynamically
   const flagImages = importAll(require.context('./flags/', false, /\.(png)$/));
 
   console.log("Flag images:", flagImages);
-
-  // Generate React components for each flag image
   const FlagComponents = Object.keys(flagImages).map((imageName, index) => {
-    // Ensure that the callback function returns a value
     console.log("Image name:", imageName);
     console.log("Image source:", flagImages[imageName]);
 
@@ -263,10 +245,8 @@ function App() {
               {displayFlags()}
             </div>
           ) : (
-            // Render your game components here when the menu is not visible
             <div>
               <h1>Game Started!</h1>
-              {/* Add your game components here */}
             </div>
           )}
         </Route>
