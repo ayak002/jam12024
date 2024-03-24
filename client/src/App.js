@@ -25,16 +25,17 @@ function Autocomplete({ options, onSelect }) {
   };
 
   return (
-    <div className="autocomplete">
+    <div className="autocomplete" style={{ display: 'inline-block' }}>
       <input
         type="text"
         value={inputValue}
         onChange={handleInputChange}
         placeholder="Search..."
+        style={{ padding: '4px', fontSize: '12  px', width: '120px', borderRadius: '4px', border: 'none', marginBottom: '4px' }}
       />
-      <ul>
+      <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
         {filteredOptions.map((option, index) => (
-          <li key={index} onClick={() => handleSelectOption(option)}>
+          <li key={index} onClick={() => handleSelectOption(option)} style={{ padding: '2px 8px', cursor: 'pointer', backgroundColor: '#f9f9f9', borderBottom: '1px solid #ddd',fontSize: '10px' }}>
             {option}
           </li>
         ))}
@@ -118,6 +119,10 @@ function GetList() {
   // Inside the GetList component
   return (
     <div className="flag-container">
+        <Autocomplete
+        options={dataArray.map(item => item[0])}
+        onHover={handleFlagHover}
+      />
       <table>
         <tbody>
           {/* Render your component using the dataArray */}
