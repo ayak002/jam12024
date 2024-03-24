@@ -2,25 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Link, Switch } from 'react-router-dom';
 import './App.css'; // Import CSS file if needed
 
-function Autocomplete({ options, onSelect }) {
+function Autocomplete({ options, onSelect, onHover }) {
   const [inputValue, setInputValue] = useState('');
-  const [filteredOptions, setFilteredOptions] = useState([]);
+  const [focusedOptionIndex, setFocusedOptionIndex] = useState(-1);
 
   const handleInputChange = (event) => {
     const value = event.target.value;
     setInputValue(value);
-
-    // Filter options based on input value
-    const filtered = options.filter(option =>
-      option.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredOptions(filtered);
+    setFocusedOptionIndex(-1); // Reset focused option index when input value changes
   };
 
   const handleSelectOption = (option) => {
     setInputValue(option);
     onSelect(option);
-    setFilteredOptions([]);
+  };
+
+  const handleHoverOption = (index) => {
+    setFocusedOptionIndex(index);
+    onHover(index);
   };
 
   return (
@@ -32,8 +31,13 @@ function Autocomplete({ options, onSelect }) {
         placeholder="Search..."
       />
       <ul>
-        {filteredOptions.map((option, index) => (
-          <li key={index} onClick={() => handleSelectOption(option)}>
+        {options.map((option, index) => (
+          <li
+            key={index}
+            onClick={() => handleSelectOption(option)}
+            onMouseEnter={() => handleHoverOption(index)}
+            className={focusedOptionIndex === index ? 'focused' : ''}
+          >
             {option}
           </li>
         ))}
@@ -45,7 +49,7 @@ function Autocomplete({ options, onSelect }) {
 function GetList() {
   const [dataArray, setDataArray] = useState([]);
   const [flagImages, setFlagImages] = useState({});
-  const [selectedFlag, setSelectedFlag] = useState(null); // State to keep track of selected flag
+  const [hoveredFlagIndex, setHoveredFlagIndex] = useState(-1); // State to keep track of hovered flag index
 
   useEffect(() => {
     // Fetch JSON data from the server
@@ -83,8 +87,12 @@ function GetList() {
     return path.split('/').pop();
   }
 
-  const handleFlagClick = (index) => {
-    setSelectedFlag(index); // Set the selected flag index
+  const handleFlagHover = (index) => {
+    setHoveredFlagIndex(index); // Set the hovered flag index
+  };
+
+  const handleFlagLeave = () => {
+    setHoveredFlagIndex(-1); // Reset hovered flag index
   };
 
   // Function to chunk the dataArray into arrays of size 10
@@ -112,7 +120,11 @@ function GetList() {
                 const filename = getFilename(imageName); // Extract the filename
                 return (
                   <td key={index}>
-                    <div key={index} className={`flag-item ${selectedFlag === index ? 'selected' : ''}`} onClick={() => handleFlagClick(index)}>
+                    <div
+                      className={`flag-item ${hoveredFlagIndex === rowIndex * 10 + index ? 'selected' : ''}`}
+                      onMouseEnter={() => handleFlagHover(rowIndex * 10 + index)}
+                      onMouseLeave={handleFlagLeave}
+                    >
                       <img className='flag' src={flagImages[filename]} alt={filename} />
                       <p className="country-name">{countryName}</p>
                     </div>
@@ -125,11 +137,13 @@ function GetList() {
       </table>
       <Autocomplete
         options={dataArray.map(item => item[0])}
-     //   onSelect={onSelect}
+        /*onSelect={/* provide the function for selecting an option */
+        onHover={handleFlagHover}
       />
     </div>
   );
 }
+
 
 function CreateGamePage() {
   return (
