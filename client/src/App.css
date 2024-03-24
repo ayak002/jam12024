@@ -40,8 +40,32 @@
 
 /* App.css */
 
-.flag-game {
+.flag-table {
   background-color: rgb(224, 255, 255);
+}
+
+.flag-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flag-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+}
+
+.flag {
+  width: 500px; /* Adjust width as needed */
+  height: auto; /* Maintain aspect ratio */
+}
+
+.country-name {
+  margin-top: 5px;
+  font-size: 14px; /* Adjust font size as needed */
+  text-align: center;
 }
 
 .flag-container {

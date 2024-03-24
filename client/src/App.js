@@ -19,11 +19,9 @@ function GetList() {
         // Convert JSON data to array
         const array = Array.isArray(data) ? data : []; // Check if data is an array
         setDataArray(array);
-        console.log("json=", array);
         // Import all flag images dynamically
         const importedFlagImages = importAll(require.context('./flags/', false, /\.(png)$/));
         setFlagImages(importedFlagImages);
-        console.log("import=",importedFlagImages)
       })
       .catch(error => {
         console.error('There was a problem with the fetch operation:', error);
@@ -44,37 +42,50 @@ function GetList() {
     return path.split('/').pop();
   }
 
+  // Function to chunk the dataArray into arrays of size 10
+  function chunkArray(arr, size) {
+    const chunkedArr = [];
+    for (let i = 0; i < arr.length; i += size) {
+      chunkedArr.push(arr.slice(i, i + size));
+    }
+    return chunkedArr;
+  }
+
+  // Chunk the dataArray into arrays of size 10
+  const chunkedFlags = chunkArray(dataArray, 10);
+
   return (
-    <div className="flag-game">
-      {/* Render your component using the dataArray */}
-      {dataArray.map((item, index) => {
-        if (Array.isArray(item) && item.length >= 2) {
-          const countryName = item[0]; // Extract the country name
-          const imageName = item[1]; // Extract the path to the image
-          const filename = getFilename(imageName); // Extract the filename
-          return (
-            <div key={index} className="flag-item">
-              <img className='flag' src={flagImages[filename]} alt={filename} />
-              <p className="country-name">{countryName}</p>
-            </div>
-          );
-        } else {
-          return null;
-        }
-      })}
+    <div className="flag-container">
+      <table>
+        <tbody>
+          {/* Render your component using the dataArray */}
+          {chunkedFlags.slice(0, 3).map((row, rowIndex) => (
+            <tr key={rowIndex}>
+              {row.map((item, index) => {
+                const countryName = item[0]; // Extract the country name
+                const imageName = item[1]; // Extract the path to the image
+                const filename = getFilename(imageName); // Extract the filename
+                return (
+                  <td key={index}>
+                    <div className="flag-item">
+                      <img className='flag' src={flagImages[filename]} alt={filename} />
+                      <p className="country-name">{countryName}</p>
+                    </div>
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
-
-
-
-
 
 function CreateGamePage() {
   return (
     <div className="white-page">
       {/* Content for the Create New Game page */}
-      <h1>Créer une nouvelle partie</h1>
       <GetList />
     </div>
   );
